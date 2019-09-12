@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const server = require('http').Server(app);
-const port = 3000;
+const port = process.env.PORT || 8080;
 const helmet = require('helmet');
 
 app.use(helmet());
