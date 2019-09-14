@@ -1,5 +1,5 @@
 {
-  "name": "sample-node-config",
+  "name": "puzzle-solver",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -18,7 +18,7 @@
     "lint": "eslint \"/**/*.js\" \"test/**/*.js\"",
     "debug": "node --inspect index.js"
   },
-  "author": "JW",
+  "author": "Gabriel Stedile",
   "license": "ISC",
   "devDependencies": {
     "babel-core": "^6.26.0",
@@ -28,7 +28,6 @@
     "eslint-plugin-node": "^5.1.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^3.0.1",
-    "nodemon": "^1.12.0",
     "webpack": "^3.7.1"
   }
 }

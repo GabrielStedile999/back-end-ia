@@ -63,6 +63,27 @@ let hassAllValues = function (array) {
     return result;
 };
 
+let verificarParametros = function (parametros) {
+    let isValid = true;
+    let estadoInicial = parametros.estadoInicial;
+    let algoritmo = parametros.algoritmo;
+
+    if(estadoInicial === null || estadoInicial === undefined) {
+        isValid = false
+    } else {
+        for (let i = 0; i <  estadoInicial.length; i++) {
+            if(estadoInicial[i] === "") {
+                isValid = false;
+            }
+        }
+    }
+
+    if(algoritmo === null || algoritmo === undefined || algoritmo === "") {
+        isValid = false;
+    }
+    return isValid;
+};
+
 let solvable = function (list) {
     let values = removeEspacoVazio(list);
     let count = 0;
@@ -96,5 +117,6 @@ module.exports = {
     arraysIguais: arraysIguais,
     expandirNodo: expandirNodo,
     hassAllValues: hassAllValues,
-    solvable: solvable
+    solvable: solvable,
+    verificarParametros: verificarParametros
 };

@@ -15,42 +15,56 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
-	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+	res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 	res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Accept');
 	next();
 });
 
-app.get('/custo-uniforme', (err, res) => {
+app.get('/puzzle-solver', (err, res) => {
+    console.log('Acessou a função de resolução');
+
 	res.status(200);
-	
     let estadoFinal = [ 1, 2, 3, 4, 5, 6, 7, 8, 0 ];
-    let estadoInicial = [ 1, 8, 2, 0, 4, 3, 7, 6,  ];
+    let parametros = res.req.query;
 
-    if(utils.hassAllValues(estadoInicial)) {
-        let isPuzzleValid = utils.solvable(estadoInicial);
-        if(isPuzzleValid) {
-            let algoritmoSelecionado = 2;
-            let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
+    if(!utils.verificarParametros(parametros)) {
+        res.json({
+            error: false,
+            resultado: 'Por favor, selecione o algoritmo de resolução ou preencha todos os valores do puzzle',
+        });
+    } else {
+        let estadoInicial = parametros.estadoInicial.map(function(e) {
+            e = Number(e);
+            return e;
+        });
+        let algoritmoSelecionado = Number(parametros.algoritmo);
 
-            res.json({
-                error: false,
-                resultado: resultadoFinal.caminho,
-                nodosVisitados: resultadoFinal.nodosVisitados,
-                maiorFronteira: resultadoFinal.maiorFronteira,
-                tamanhoDoCaminho: resultadoFinal.tamanhoDoCaminho
-            });
+        if(utils.hassAllValues(estadoInicial)) {
+            let isPuzzleValid = utils.solvable(estadoInicial);
+            if(isPuzzleValid) {
+
+                let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
+
+                res.json({
+                    error: false,
+                    resultado: resultadoFinal.caminho,
+                    nodosVisitados: resultadoFinal.nodosVisitados,
+                    maiorFronteira: resultadoFinal.maiorFronteira,
+                    tamanhoDoCaminho: resultadoFinal.tamanhoDoCaminho
+                });
+            } else {
+                res.json({
+                    error: true,
+                    resultado: "Valores Iniciais para jogo dos 8 não resolvível. Por favor, insira um jogo válido.",
+                });
+            }
         } else {
             res.json({
                 error: true,
-                resultado: "Valores Iniciais para jogo dos 8 não resolvível. Por favor, insira um jogo válido.",
+                resultado: "Por favor, preencha todos os valores",
             });
         }
-    } else {
-        res.json({
-            error: true,
-            resultado: "Por favor, preencha todos os valores",
-        });
     }
     res.end();
 });
@@ -59,13 +73,11 @@ server.listen(port, (err) => {
 	if (err) {
 		throw err;
 	}
-	/* eslint-disable no-console */
-	console.log('Node Endpoints working :)');
 });
 
 function seletorDeAlgoritmo(algoritmo, estadoInicial, estadoFinal) {
     let resultado = {
-        caminho: 'teste',
+        caminho: '',
         nodosVisitados: 0,
         maiorFronteira: 0,
         tamanhoDoCaminho: 0
