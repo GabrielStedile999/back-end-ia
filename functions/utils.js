@@ -50,8 +50,51 @@ let arraysIguais = function (a, b) {
     return JSON.stringify(a) === JSON.stringify(b)
 };
 
+let hassAllValues = function (array) {
+    let result = true;
+    array.forEach(value => {
+        if(value === '' || value === null) {
+            result = false;
+        }
+    });
+    if(array.length !== 9) {
+        return false;
+    }
+    return result;
+};
+
+let solvable = function (list) {
+    let values = removeEspacoVazio(list);
+    let count = 0;
+    for( let i=0;i<values.length-1;i++){
+        for(let j=i+1;j<values.length;j++){
+            if(values[i]>values[j]){
+                count++;
+            }
+        }
+
+    }
+
+    if(count%2 === 0){
+        return true;
+    }else{
+        return false;
+    }
+};
+
+let removeEspacoVazio = function (array) {
+    let result = [];
+    array.forEach(value => {
+        if(value !== 0) {
+            result.push(value)
+        }
+    });
+    return result;
+};
 
 module.exports = {
     arraysIguais: arraysIguais,
-    expandirNodo: expandirNodo
+    expandirNodo: expandirNodo,
+    hassAllValues: hassAllValues,
+    solvable: solvable
 };

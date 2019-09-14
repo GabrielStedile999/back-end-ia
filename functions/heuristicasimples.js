@@ -1,11 +1,11 @@
 
-const expandirNodo = require('./utils.js');
+const utils = require('./utils.js');
 
 let startHS = function (nodo, nodos, emptyPos, adjacents) {
     let heuristica = wrongPosition(nodo);
     let custo = nodo.custo+1;
     let func = heuristica + custo;
-    return expandirNodo(nodo, emptyPos, adjacents, nodos, heuristica, custo, func);
+    return utils.expandirNodo(nodo, emptyPos, adjacents, nodos, heuristica, custo, func);
 };
 
 let wrongPosition = function (nodo) {

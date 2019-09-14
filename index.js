@@ -22,20 +22,37 @@ app.use((req, res, next) => {
 });
 
 app.get('/custo-uniforme', (err, res) => {
-	console.log('custo uniforme chamado');
 	res.status(200);
 	
     let estadoFinal = [ 1, 2, 3, 4, 5, 6, 7, 8, 0 ];
-    let estadoInicial = [ 1, 8, 2, 0, 4, 3, 7, 6, 5 ];
+    let estadoInicial = [ 1, 8, 2, 0, 4, 3, 7, 6,  ];
 
-    let algoritmoSelecionado = 0;
-    let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
+    if(utils.hassAllValues(estadoInicial)) {
+        let isPuzzleValid = utils.solvable(estadoInicial);
+        if(isPuzzleValid) {
+            let algoritmoSelecionado = 2;
+            let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
 
-    console.log('Resultado');
-    console.log(resultadoFinal.caminho);
-
-    res.json({ resultado: resultadoFinal.caminho });
-	res.end();
+            res.json({
+                error: false,
+                resultado: resultadoFinal.caminho,
+                nodosVisitados: resultadoFinal.nodosVisitados,
+                maiorFronteira: resultadoFinal.maiorFronteira,
+                tamanhoDoCaminho: resultadoFinal.tamanhoDoCaminho
+            });
+        } else {
+            res.json({
+                error: true,
+                resultado: "Valores Iniciais para jogo dos 8 não resolvível. Por favor, insira um jogo válido.",
+            });
+        }
+    } else {
+        res.json({
+            error: true,
+            resultado: "Por favor, preencha todos os valores",
+        });
+    }
+    res.end();
 });
 
 server.listen(port, (err) => {

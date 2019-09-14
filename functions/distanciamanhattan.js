@@ -1,10 +1,10 @@
-const expandirNodo = require('./utils.js');
+const utils = require('./utils.js');
 
 let startDM = function (nodo, nodos, emptyPos, adjacents) {
     let heuristica = manhattanDistance(nodo);
     let custo = nodo.custo+1;
     let func = heuristica + custo;
-    return expandirNodo(nodo, emptyPos, adjacents, nodos, heuristica, custo, func);
+    return utils.expandirNodo(nodo, emptyPos, adjacents, nodos, heuristica, custo, func);
 };
 
 let manhattanDistance = function (nodo) {
