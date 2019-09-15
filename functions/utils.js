@@ -11,8 +11,9 @@ let expandirNodo = function (nodo, emptyPos, adjacents, nodos, heuristica, custo
 
             let isVisitado = verificarNodoFechados(nodoNovo.estado, nodos.nodosVisitados);
             let isEqualNew = verificarNodoFechados(nodoNovo.estado, allNewNodos);
+            let isAberto = verificarNodoFechados(nodoNovo.estado, nodos.nodosAbertos);
             allNewNodos.push(nodoNovo);
-            if(!isVisitado && !isEqualNew) {
+            if(!isVisitado && !isEqualNew && !isAberto) {
                 newNodos.push(nodoNovo);
             }
         }

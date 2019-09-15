@@ -46,13 +46,20 @@ app.get('/puzzle-solver', (err, res) => {
 
                 let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
 
-                res.json({
-                    error: false,
-                    resultado: resultadoFinal.caminho,
-                    nodosVisitados: resultadoFinal.nodosVisitados,
-                    maiorFronteira: resultadoFinal.maiorFronteira,
-                    tamanhoDoCaminho: resultadoFinal.tamanhoDoCaminho
-                });
+                if(resultadoFinal.caminho === 'Extrapolou') {
+                    res.json({
+                        error: true,
+                        resultado: "Limitação de processamento. Profundidade igual a 15. Por favor tente outra configuração de jogo"
+                    });
+                } else {
+                    res.json({
+                        error: false,
+                        resultado: resultadoFinal.caminho,
+                        nodosVisitados: resultadoFinal.nodosVisitados,
+                        maiorFronteira: resultadoFinal.maiorFronteira,
+                        tamanhoDoCaminho: resultadoFinal.tamanhoDoCaminho
+                    });
+                }
             } else {
                 res.json({
                     error: true,
@@ -118,6 +125,7 @@ function startAlgorithm(nodo, estadoFinal, nodos, resultado, algorithmType) {
     let nodoObjetivo = nodo;
     let isStart = true;
     let maiorFronteira = 0;
+
     while(!utils.arraysIguais(nodoObjetivo.estado, estadoFinal)) {
         let fronteiraSize = nodos.nodosAbertos.length > maiorFronteira ? nodos.nodosAbertos.length : maiorFronteira;
         maiorFronteira = fronteiraSize;
@@ -125,9 +133,15 @@ function startAlgorithm(nodo, estadoFinal, nodos, resultado, algorithmType) {
             startRoute(nodo,nodos, algorithmType);
             isStart = false;
         } else if(nodos.nodosAbertos.length !== 0) {
+
             nodoObjetivo = nodos.nodosAbertos[0];
             nodos.nodosVisitados.push(nodoObjetivo);
-            visitarNodo(nodoObjetivo, nodos, algorithmType)
+            visitarNodo(nodoObjetivo, nodos, algorithmType);
+            if(nodoObjetivo.caminho.length >= 15) {
+                console.log(nodoObjetivo.caminho);
+                nodoObjetivo.caminho = 'Extrapolou';
+                nodoObjetivo.estado = estadoFinal;
+            }
         } else {
             console.log("Sem fronteira");
             nodoObjetivo.estado = estadoFinal
