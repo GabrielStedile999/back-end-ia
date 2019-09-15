@@ -9,6 +9,7 @@ const startCU = require('./functions/custouniforme.js');
 const startDM = require('./functions/distanciamanhattan.js');
 const startHS = require('./functions/heuristicasimples.js');
 const utils = require('./functions/utils.js');
+const aUtils = require('./functions/arrayFunctions');
 
 app.use(helmet());
 app.use(bodyParser.json());
@@ -34,10 +35,12 @@ app.get('/puzzle-solver', (err, res) => {
             resultado: 'Por favor, selecione o algoritmo de resolução ou preencha todos os valores do puzzle',
         });
     } else {
-        let estadoInicial = parametros.estadoInicial.map(function(e) {
-            e = Number(e);
-            return e;
-        });
+        let estadoInicial = parametros.estadoInicial;
+
+        for (let i = 0, l = estadoInicial.length; i < l; i++) {
+            estadoInicial[i] = Number(estadoInicial[i])
+        }
+
         let algoritmoSelecionado = Number(parametros.algoritmo);
 
         if(utils.hassAllValues(estadoInicial)) {
@@ -46,10 +49,10 @@ app.get('/puzzle-solver', (err, res) => {
 
                 let resultadoFinal = seletorDeAlgoritmo(algoritmoSelecionado, estadoInicial, estadoFinal);
 
-                if(resultadoFinal.caminho === 'Extrapolou') {
+                if(resultadoFinal.caminho === 'Limite') {
                     res.json({
                         error: true,
-                        resultado: "Limitação de processamento. Profundidade igual a 15. Por favor tente outra configuração de jogo"
+                        resultado: "Limite de profundidade atingidade. Por favor jogue novamente com valores diferentes."
                     });
                 } else {
                     res.json({
@@ -127,8 +130,7 @@ function startAlgorithm(nodo, estadoFinal, nodos, resultado, algorithmType) {
     let maiorFronteira = 0;
 
     while(!utils.arraysIguais(nodoObjetivo.estado, estadoFinal)) {
-        let fronteiraSize = nodos.nodosAbertos.length > maiorFronteira ? nodos.nodosAbertos.length : maiorFronteira;
-        maiorFronteira = fronteiraSize;
+        maiorFronteira = nodos.nodosAbertos.length > maiorFronteira ? nodos.nodosAbertos.length : maiorFronteira;
         if(isStart) {
             startRoute(nodo,nodos, algorithmType);
             isStart = false;
@@ -137,9 +139,10 @@ function startAlgorithm(nodo, estadoFinal, nodos, resultado, algorithmType) {
             nodoObjetivo = nodos.nodosAbertos[0];
             nodos.nodosVisitados.push(nodoObjetivo);
             visitarNodo(nodoObjetivo, nodos, algorithmType);
-            if(nodoObjetivo.caminho.length >= 15) {
+
+            if(nodoObjetivo.caminho.length >= 25) {
                 console.log(nodoObjetivo.caminho);
-                nodoObjetivo.caminho = 'Extrapolou';
+                nodoObjetivo.caminho = 'Limite';
                 nodoObjetivo.estado = estadoFinal;
             }
         } else {
@@ -195,9 +198,9 @@ let visitarNodo = function (nodo, nodos, algorithmType) {
 };
 
 let organizarNodosAbertos = function (novosNodos, nodos) {
-    nodos.nodosAbertos.splice(0,1);
-    nodos.nodosAbertos.push(...novosNodos);
-    nodos.nodosAbertos.sort(sortNodos);
+    aUtils.spliceOne(nodos.nodosAbertos, 0);
+    aUtils.pushAll(nodos.nodosAbertos, novosNodos);
+    aUtils.arraySortedInsert(nodos.nodosAbertos);
 };
 
 let sortNodos = function (nodo1, nodo2) {
@@ -244,7 +247,7 @@ let getAdjacentes = function (position) {
 };
 
 let getPosicao = function (array, position) {
-    return array.indexOf(position);
+    return aUtils.indexOf(array, position);
 };
 
 module.exports = server;

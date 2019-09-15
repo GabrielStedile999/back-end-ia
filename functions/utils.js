@@ -1,39 +1,38 @@
+const aUtils = require('./arrayFunctions');
 
 let expandirNodo = function (nodo, emptyPos, adjacents, nodos, heuristica, custo, func) {
     let newNodos = [];
     let allNewNodos = [];
-    adjacents.forEach(e => {
-            let nodoState = Array.from(nodo.estado);
-            moverPosicaoArray(nodoState, emptyPos, e);
-            let caminho = nodo.caminho + e.direcao;
 
-            let nodoNovo = criarNodo(nodoState, caminho, heuristica, custo, func);
-
-            let isVisitado = verificarNodoFechados(nodoNovo.estado, nodos.nodosVisitados);
-            let isEqualNew = verificarNodoFechados(nodoNovo.estado, allNewNodos);
-            let isAberto = verificarNodoFechados(nodoNovo.estado, nodos.nodosAbertos);
-            allNewNodos.push(nodoNovo);
-            if(!isVisitado && !isEqualNew && !isAberto) {
-                newNodos.push(nodoNovo);
-            }
+    for (let i=0; i !== adjacents.length ; i++) {
+        let nodoState = aUtils.clonarArray(nodo.estado);
+        moverPosicaoArray(nodoState, emptyPos, adjacents[i]);
+        let caminho = nodo.caminho + adjacents[i].direcao;
+        let nodoNovo = criarNodo(nodoState, caminho, heuristica, custo, func);
+        let isVisitado = verificarNodoFechados(nodoNovo.estado, nodos.nodosVisitados);
+        let isEqualNew = verificarNodoFechados(nodoNovo.estado, allNewNodos);
+        let isAberto = verificarNodoFechados(nodoNovo.estado, nodos.nodosAbertos);
+        aUtils.add(allNewNodos,nodoNovo, i);
+        if(!isVisitado && !isEqualNew && !isAberto) {
+            aUtils.push(newNodos, nodoNovo);
         }
-    );
+    }
     return newNodos;
 };
 
-let moverPosicaoArray = function (arr, fromIndex, adjacente) {
-    let fromValueTemp = arr[fromIndex];
+let moverPosicaoArray = function (array, fromIndex, adjacente) {
+    let fromValueTemp = array[fromIndex];
 
-    arr[fromIndex] = arr[adjacente.posicao];
-    arr[adjacente.posicao] = fromValueTemp;
+    array[fromIndex] = array[adjacente.posicao];
+    array[adjacente.posicao] = fromValueTemp;
 };
 
 let verificarNodoFechados = function (estado, nodos) {
-    nodos.every(e => {
-        if(arraysIguais(e.estado, estado)) {
+    for (let i=0; i !== nodos.length ; i++) {
+        if(arraysIguais(nodos[i].estado, estado)) {
             return true;
         }
-    });
+    }
     return false;
 };
 
@@ -53,14 +52,18 @@ let arraysIguais = function (a, b) {
 
 let hassAllValues = function (array) {
     let result = true;
-    array.forEach(value => {
-        if(value === '' || value === null) {
-            result = false;
-        }
-    });
+
     if(array.length !== 9) {
         return false;
     }
+
+    for (let i = 0, l = array.length; i < l; i++) {
+        let item = array[i];
+        if(item === '' || item === null) {
+            result = false;
+        }
+    }
+
     return result;
 };
 
@@ -106,11 +109,13 @@ let solvable = function (list) {
 
 let removeEspacoVazio = function (array) {
     let result = [];
-    array.forEach(value => {
-        if(value !== 0) {
-            result.push(value)
+
+    for( let i=0;i<array.length;i++){
+        let item = array[i];
+        if(item !== 0) {
+            aUtils.push(result, item)
         }
-    });
+    }
     return result;
 };
 
